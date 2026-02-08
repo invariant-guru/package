@@ -38,14 +38,47 @@ Create the package root directory with the package name. Inside it, create:
 
 ### Step 4 -- Generate item content
 
-For each item file, generate starter content:
+For each item file, generate starter content following these guidelines:
 
-- **Agents**: Write a role description, approach, and workflow outline.
-- **Skills**: Write a `SKILL.md` with usage instructions and a step-by-step procedure.
-- **Commands**: Write trigger syntax, parameters, and expected behavior.
-- **Rules**: Write the constraints and guidelines to enforce.
-- **Contexts**: Write background knowledge and reference material.
-- **Instructions**: Write ordered procedural steps.
+- **Agents**: Write a role description (`## Role`), approach (`## Approach`), and workflow (`## Workflow`).
+- **Skills**: Write a `SKILL.md` with `## Usage` (when to invoke) and `## Procedure` (ordered `### Step N` sections).
+- **Commands**: Write `## Trigger`, `## Parameters`, and `## Behavior`.
+- **Rules**: State constraints directly as bullet points.
+- **Contexts**: Provide background knowledge and reference material.
+- **Instructions**: Follow the instruction-crafting principles below.
+
+#### Crafting instructions
+
+Instructions are embedded directly into the AI context on every interaction. They must be:
+
+1. **Self-contained but concise** -- include small inline examples and key rules so the AI can act without invoking anything else. Avoid walls of text.
+2. **Skill-aware** -- if the package includes a skill related to the instruction, the instruction MUST explicitly reference it (e.g. "For interactive scaffolding, invoke the **`my-skill`** skill."). This is mandatory.
+3. **Example-driven** -- every concept should have a short fenced code block example. Show, don't just tell.
+4. **Action-first** -- lead with what to do, not background theory.
+5. **Checklist-ended** -- close with a validation checklist using `- [ ]` checkboxes.
+
+Use this template:
+
+```markdown
+# <Topic>
+
+<What this covers.> For interactive guidance, invoke the **`<skill>`** skill.
+
+## <Section>
+
+<Concise explanation.>
+
+\`\`\`example
+...
+\`\`\`
+
+## Checklist
+
+- [ ] Validation point 1.
+- [ ] Validation point 2.
+
+For deeper workflows, invoke the **`<skill>`** skill.
+```
 
 ### Step 5 -- Validate
 

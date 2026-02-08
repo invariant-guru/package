@@ -1,79 +1,215 @@
-# Invariant Package Creation Guide
+# Invariant Package Creation
 
-When creating or modifying an Invariant package, follow the structure and rules below.
+When you need to create an Invariant package, use this instruction as your reference. To scaffold a package interactively with prompts and file generation, invoke the **`create-package`** skill.
 
-## Package Manifest
+## Package Structure
 
-Every package requires an `invariant-package.json` at its root with these fields:
-
-| Field         | Type   | Description                                                        |
-|---------------|--------|--------------------------------------------------------------------|
-| `name`        | string | Unique lowercase name, may contain hyphens.                        |
-| `version`     | string | Semantic version (`major.minor.patch`).                            |
-| `description` | string | Short human-readable summary shown in search results.              |
-| `author`      | string | Author name or handle.                                             |
-| `license`     | string | License identifier (e.g. `MIT`, `Apache-2.0`).                     |
-| `repository`  | string | URL to the source repository.                                      |
-| `items`       | object | Maps item type directories to arrays of `{ name, description }`.   |
-
-## Item Types
-
-There are six item types. Each lives in its own directory:
-
-- **agents/** -- High-level AI behavior specifications (role, approach, workflows).
-- **skills/** -- Repeatable procedures invoked on demand. Always a folder with a `SKILL.md` entry point.
-- **commands/** -- Custom slash-command definitions with trigger, parameters, and behavior.
-- **rules/** -- Constraints and guidelines the AI must always follow.
-- **contexts/** -- Background knowledge (architecture, tech stack, domain terms).
-- **instructions/** -- Procedural step-by-step guides for specific situations.
-
-## Item Formats
-
-- All types except skills can be a single `.md` file or a folder of `.md` files.
-- Skills must always be a folder containing at least `SKILL.md`.
-- The `name` in the manifest matches the filename (without extension) or folder name.
-
-## README
-
-Every package must include a `README.md` at its root. The README is the human-facing description of the package and should contain:
-
-- The package name as a heading.
-- A short description of what the package provides.
-- A table or list of included items with their types and descriptions.
-- Install instructions (`invariant install <name>`).
-- Author and license information.
-
-## Directory Layout
+A package is a directory with a manifest, a README, and item directories:
 
 ```
 my-package/
-├── invariant-package.json
-├── README.md
-├── agents/
-│   ├── my-agent.md
-│   └── complex-agent/
-│       ├── overview.md
-│       └── checklist.md
-├── skills/
-│   └── my-skill/
-│       ├── SKILL.md
-│       └── templates/
-├── commands/
-│   └── my-command.md
-├── rules/
-│   └── my-rule.md
-├── contexts/
-│   └── overview.md
-└── instructions/
-    └── setup.md
+├── invariant-package.json   # manifest (required)
+├── README.md                # human-facing description (required)
+├── agents/                  # AI behavior specs
+├── skills/                  # repeatable procedures (always folders)
+├── commands/                # slash-command definitions
+├── rules/                   # constraints and standards
+├── contexts/                # background knowledge
+└── instructions/            # procedural guides (embedded in AI context)
 ```
 
-Only include directories for the item types your package provides.
+Only include directories for item types the package provides.
 
-## Validation Rules
+## Manifest
 
-- A `README.md` must exist at the package root.
-- Every item declared in `invariant-package.json` must have a matching file or folder.
-- Skills must be folders with a `SKILL.md` inside.
-- Package names must be lowercase and may only contain hyphens.
-- Version must follow semantic versioning.
+```json
+{
+  "name": "my-package",
+  "version": "1.0.0",
+  "description": "Short summary shown in search results.",
+  "author": "my-handle",
+  "license": "MIT",
+  "repository": "https://github.com/my-handle/my-package",
+  "items": {
+    "rules": [{ "name": "naming", "description": "Enforces naming conventions." }],
+    "skills": [{ "name": "setup", "description": "Scaffolds the project." }],
+    "instructions": [{ "name": "guide", "description": "How to use this package." }]
+  }
+}
+```
+
+- `name`: lowercase, hyphens allowed, scoped (`@author/name`) if needed.
+- `version`: semver (`major.minor.patch`).
+- `items`: maps type directories to `{ name, description }` arrays. Each entry must match a file or folder on disk.
+
+## Item Types at a Glance
+
+| Type           | Format                     | Purpose                                           |
+|----------------|----------------------------|---------------------------------------------------|
+| `agents/`      | `.md` file or folder       | Shape AI behavior for a class of tasks            |
+| `skills/`      | folder with `SKILL.md`     | Repeatable on-demand procedures                   |
+| `commands/`    | `.md` file or folder       | Custom `/slash` commands                          |
+| `rules/`       | `.md` file or folder       | Constraints the AI must always follow             |
+| `contexts/`    | `.md` file or folder       | Background knowledge for the AI                   |
+| `instructions/`| `.md` file or folder       | Step-by-step guides embedded in AI context        |
+
+All types except skills can be a single `.md` file or a folder of `.md` files. Skills must always be a folder containing at least `SKILL.md`.
+
+## Writing Each Item Type
+
+### Agents
+
+Define role, approach, and workflow. Example:
+
+```markdown
+# Agent: Reviewer
+You review PRs for architectural violations.
+## Role
+Expert in clean architecture layer dependencies.
+## Workflow
+1. Read the diff. 2. Flag violations. 3. Suggest fixes.
+```
+
+### Skills
+
+Must be a folder with `SKILL.md`. Include `## Usage` (when to invoke) and `## Procedure` (ordered steps). Example:
+
+```markdown
+# Skill: Setup
+## Usage
+Invoke when the user wants to scaffold the project.
+## Procedure
+### Step 1 -- Gather inputs
+Ask for project name and framework.
+### Step 2 -- Generate files
+Create the directory structure and config files.
+```
+
+### Commands
+
+Define trigger, parameters, and behavior:
+
+```markdown
+# Command: scaffold
+## Trigger
+/scaffold <name>
+## Parameters
+- name: Component name to create.
+## Behavior
+1. Create folder. 2. Generate template files.
+```
+
+### Rules
+
+State constraints directly:
+
+```markdown
+# Rule: Naming
+- camelCase for variables and functions.
+- PascalCase for classes and types.
+- UPPER_SNAKE_CASE for constants.
+```
+
+### Contexts
+
+Provide background knowledge:
+
+```markdown
+# Context: Tech Stack
+- Frontend: React + TypeScript
+- Backend: Node.js + Express
+- Database: PostgreSQL
+```
+
+### Instructions
+
+See the dedicated section below -- instructions require special attention.
+
+## Crafting Good Instructions
+
+Instructions are the most important item type to get right. Unlike skills (invoked on demand) or agents (activated explicitly), **instructions are always embedded directly into the AI context** (e.g. `claude.md`). Every token counts, and the AI reads them on every interaction.
+
+### Principles
+
+1. **Self-contained but concise.** The instruction must give the AI enough to act without invoking anything else. Include small inline examples, key rules, and the essential "how". But keep it tight -- avoid walls of text.
+
+2. **Point to skills for depth.** When a topic has an interactive, multi-step workflow, summarize the key points inline and then explicitly direct the AI to invoke the skill. Example:
+
+   > To scaffold a new package interactively, invoke the **`create-package`** skill.
+
+   This way, the AI can handle simple cases from the instruction alone, and delegate complex cases to the skill.
+
+3. **Lead with action, not theory.** Start with what to do, not background. The AI doesn't need a history lesson -- it needs a clear procedure.
+
+4. **Include examples for every concept.** A 3-line example is worth a paragraph of explanation. Use fenced code blocks with realistic content.
+
+5. **Use checklists for validation.** Checkboxes make it easy for the AI to verify its work systematically.
+
+### Instruction Template
+
+```markdown
+# <Topic>
+
+<One sentence: what this instruction covers and when to use it.>
+<One sentence: reference the relevant skill for interactive/deep workflows.>
+
+## <Core Section>
+
+<Concise explanation with inline example.>
+
+## <Another Section>
+
+<Concise explanation with inline example.>
+
+## Checklist
+
+- [ ] First validation point.
+- [ ] Second validation point.
+
+For interactive guidance, invoke the **`<skill-name>`** skill.
+```
+
+### Anti-patterns to Avoid
+
+- **No skill reference.** If the package has a skill related to the instruction, the instruction MUST reference it. Otherwise the AI won't know the skill exists.
+- **Too verbose.** Instructions are loaded on every interaction. A 500-line instruction wastes tokens. Aim for the minimum needed to act.
+- **Too sparse.** If the instruction just says "use the skill", the AI can't handle simple cases without invoking it. Include enough inline detail.
+- **No examples.** Abstract rules without examples lead to inconsistent AI behavior. Always show, don't just tell.
+
+## README.md
+
+Every package must include a `README.md`:
+
+```markdown
+# my-package
+Short description.
+
+## Items
+| Type        | Name   | Description                    |
+|-------------|--------|--------------------------------|
+| Rule        | naming | Enforces naming conventions.   |
+| Skill       | setup  | Scaffolds the project.         |
+| Instruction | guide  | How to use this package.       |
+
+## Install
+invariant install @author/my-package
+
+## Author
+my-handle
+
+## License
+MIT
+```
+
+## Validation Checklist
+
+- [ ] `README.md` exists at the package root.
+- [ ] `invariant-package.json` has `name`, `version`, `description`, `author`, `license`.
+- [ ] Every item in the manifest has a matching file or folder on disk.
+- [ ] Skills are folders containing `SKILL.md`.
+- [ ] Instructions reference related skills when they exist.
+- [ ] Instructions are concise with inline examples.
+- [ ] Package name is lowercase, hyphens only.
+- [ ] Version follows semver.
+
+To scaffold a complete package interactively, invoke the **`create-package`** skill.

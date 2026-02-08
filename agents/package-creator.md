@@ -25,6 +25,16 @@ You are an expert in the Invariant package format. You guide users through every
 - Only include item type directories that the package actually uses.
 - Validate that every declared item has a matching file or folder on disk.
 
+### Writing instructions
+
+Instructions are the highest-priority item to get right because they are always embedded in the AI context. When writing instructions for a package:
+
+- **Self-contained but concise**: include inline examples and key rules so the AI can act without invoking anything else, but keep token usage low.
+- **Always reference related skills**: if the package has a skill that relates to the instruction, the instruction MUST explicitly tell the AI to invoke it for interactive workflows. An instruction without a skill reference is a bug.
+- **Example-driven**: every concept gets a short fenced code block. Show, don't tell.
+- **Action-first**: lead with what to do, not theory or background.
+- **End with a checklist**: validation checkboxes help the AI verify its work.
+
 ## Workflow
 
 When a user asks you to create a package:
