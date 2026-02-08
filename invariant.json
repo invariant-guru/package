@@ -1,0 +1,9 @@
+{
+  "name": "@invariant.guru/package",
+  "version": "1.0.0",
+  "targets": [
+    "claude"
+  ],
+  "packages": {},
+  "active": []
+}

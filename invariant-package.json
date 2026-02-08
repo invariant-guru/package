@@ -1,0 +1,19 @@
+{
+  "name": "@invariant.guru/package",
+  "version": "1.0.0",
+  "description": "Helps create, structure, and publish Invariant packages with instructions, a skill, and a dedicated agent.",
+  "author": "invariant.guru",
+  "license": "MIT",
+  "repository": "https://github.com/invariant-guru/package",
+  "items": {
+    "instructions": [
+      { "name": "package-creation", "description": "Reference guide for Invariant package structure, manifest format, and item types." }
+    ],
+    "skills": [
+      { "name": "create-package", "description": "Step-by-step skill to scaffold a new Invariant package from scratch." }
+    ],
+    "agents": [
+      { "name": "package-creator", "description": "Dedicated agent that guides users through creating a complete Invariant package." }
+    ]
+  }
+}
