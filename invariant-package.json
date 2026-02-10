@@ -1,5 +1,5 @@
 {
-  "name": "@invariant.guru/package",
+  "name": "package",
   "version": "1.0.0",
   "description": "Helps create, structure, and publish Invariant packages with instructions, a skill, and a dedicated agent.",
   "author": "invariant.guru",
