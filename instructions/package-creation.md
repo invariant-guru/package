@@ -2,6 +2,16 @@
 
 When you need to create an Invariant package, use this instruction as your reference. To scaffold a package interactively with prompts and file generation, invoke the **`create-package`** skill.
 
+## This Package Contains
+
+| Item | Type | When to use |
+|------|------|-------------|
+| `package-creation` | Instruction | You're reading it. Embedded in context as a reference for creating packages. |
+| `create-package` | Skill | Invoke to interactively scaffold a new package with prompts and file generation. |
+| `package-creator` | Agent | Activate for a dedicated session focused entirely on designing and building a package. |
+
+> **Partial installs:** Invariant lets users install only a subset of a package's items. Some items listed above may not be present in your `.claude` folder -- that's expected. Use what's available and refer to the descriptions above to understand what each item does if you need it.
+
 ## Package Structure
 
 A package is a directory with a manifest, a README, and item directories:
@@ -131,19 +141,34 @@ Instructions are the most important item type to get right. Unlike skills (invok
 
 ### Principles
 
-1. **Self-contained but concise.** The instruction must give the AI enough to act without invoking anything else. Include small inline examples, key rules, and the essential "how". But keep it tight -- avoid walls of text.
+1. **Start with a package contents table.** Every instruction must open with a TLDR table listing all items in the package (name, type, when to use). This tells the AI what resources exist at a glance. Include a note that Invariant allows partial installs -- some items may not be in the `.claude` folder, and that's expected. Example:
 
-2. **Point to skills for depth.** When a topic has an interactive, multi-step workflow, summarize the key points inline and then explicitly direct the AI to invoke the skill. Example:
+   ```markdown
+   ## This Package Contains
+   | Item | Type | When to use |
+   |------|------|-------------|
+   | `my-guide` | Instruction | Embedded in context as a reference. |
+   | `my-skill` | Skill | Invoke to run the interactive workflow. |
+   | `my-agent` | Agent | Activate for a dedicated session. |
+
+   > **Partial installs:** Some items above may not be present in your
+   > `.claude` folder. Invariant lets users install only a subset of a
+   > package. Use what's available.
+   ```
+
+2. **Self-contained but concise.** The instruction must give the AI enough to act without invoking anything else. Include small inline examples, key rules, and the essential "how". But keep it tight -- avoid walls of text.
+
+3. **Point to skills for depth.** When a topic has an interactive, multi-step workflow, summarize the key points inline and then explicitly direct the AI to invoke the skill. Example:
 
    > To scaffold a new package interactively, invoke the **`create-package`** skill.
 
    This way, the AI can handle simple cases from the instruction alone, and delegate complex cases to the skill.
 
-3. **Lead with action, not theory.** Start with what to do, not background. The AI doesn't need a history lesson -- it needs a clear procedure.
+4. **Lead with action, not theory.** Start with what to do, not background. The AI doesn't need a history lesson -- it needs a clear procedure.
 
-4. **Include examples for every concept.** A 3-line example is worth a paragraph of explanation. Use fenced code blocks with realistic content.
+5. **Include examples for every concept.** A 3-line example is worth a paragraph of explanation. Use fenced code blocks with realistic content.
 
-5. **Use checklists for validation.** Checkboxes make it easy for the AI to verify its work systematically.
+6. **Use checklists for validation.** Checkboxes make it easy for the AI to verify its work systematically.
 
 ### Instruction Template
 
@@ -152,6 +177,17 @@ Instructions are the most important item type to get right. Unlike skills (invok
 
 <One sentence: what this instruction covers and when to use it.>
 <One sentence: reference the relevant skill for interactive/deep workflows.>
+
+## This Package Contains
+
+| Item | Type | When to use |
+|------|------|-------------|
+| `<instruction>` | Instruction | <short description> |
+| `<skill>` | Skill | <short description> |
+
+> **Partial installs:** Some items above may not be present in your
+> `.claude` folder. Invariant lets users install only a subset of a
+> package. Use what's available.
 
 ## <Core Section>
 
@@ -171,7 +207,9 @@ For interactive guidance, invoke the **`<skill-name>`** skill.
 
 ### Anti-patterns to Avoid
 
+- **No package contents table.** Without it, the AI doesn't know what's available in the package and can't discover skills or agents on its own.
 - **No skill reference.** If the package has a skill related to the instruction, the instruction MUST reference it. Otherwise the AI won't know the skill exists.
+- **No partial-install note.** Users can install subsets of a package. If the instruction doesn't mention this, the AI may error when an item is missing.
 - **Too verbose.** Instructions are loaded on every interaction. A 500-line instruction wastes tokens. Aim for the minimum needed to act.
 - **Too sparse.** If the instruction just says "use the skill", the AI can't handle simple cases without invoking it. Include enough inline detail.
 - **No examples.** Abstract rules without examples lead to inconsistent AI behavior. Always show, don't just tell.
@@ -207,6 +245,8 @@ MIT
 - [ ] `invariant-package.json` has `name`, `version`, `description`, `author`, `license`.
 - [ ] Every item in the manifest has a matching file or folder on disk.
 - [ ] Skills are folders containing `SKILL.md`.
+- [ ] Instructions open with a "This Package Contains" table listing all items.
+- [ ] Instructions include a partial-install note.
 - [ ] Instructions reference related skills when they exist.
 - [ ] Instructions are concise with inline examples.
 - [ ] Package name is lowercase, hyphens only.

@@ -51,11 +51,12 @@ For each item file, generate starter content following these guidelines:
 
 Instructions are embedded directly into the AI context on every interaction. They must be:
 
-1. **Self-contained but concise** -- include small inline examples and key rules so the AI can act without invoking anything else. Avoid walls of text.
-2. **Skill-aware** -- if the package includes a skill related to the instruction, the instruction MUST explicitly reference it (e.g. "For interactive scaffolding, invoke the **`my-skill`** skill."). This is mandatory.
-3. **Example-driven** -- every concept should have a short fenced code block example. Show, don't just tell.
-4. **Action-first** -- lead with what to do, not background theory.
-5. **Checklist-ended** -- close with a validation checklist using `- [ ]` checkboxes.
+1. **Package-contents-first** -- open with a "This Package Contains" table listing every item in the package (name, type, when to use). Add a note that Invariant allows partial installs, so some items may not be in the `.claude` folder and that's expected.
+2. **Self-contained but concise** -- include small inline examples and key rules so the AI can act without invoking anything else. Avoid walls of text.
+3. **Skill-aware** -- if the package includes a skill related to the instruction, the instruction MUST explicitly reference it (e.g. "For interactive scaffolding, invoke the **`my-skill`** skill."). This is mandatory.
+4. **Example-driven** -- every concept should have a short fenced code block example. Show, don't just tell.
+5. **Action-first** -- lead with what to do, not background theory.
+6. **Checklist-ended** -- close with a validation checklist using `- [ ]` checkboxes.
 
 Use this template:
 
@@ -63,6 +64,17 @@ Use this template:
 # <Topic>
 
 <What this covers.> For interactive guidance, invoke the **`<skill>`** skill.
+
+## This Package Contains
+
+| Item | Type | When to use |
+|------|------|-------------|
+| `<instruction>` | Instruction | <short description> |
+| `<skill>` | Skill | <short description> |
+
+> **Partial installs:** Some items above may not be present in your
+> `.claude` folder. Invariant lets users install only a subset of a
+> package. Use what's available.
 
 ## <Section>
 
@@ -86,6 +98,8 @@ Verify that:
 - A `README.md` exists at the package root.
 - Every item in `invariant-package.json` has a corresponding file or folder.
 - All skill items are folders with a `SKILL.md`.
+- Instructions open with a "This Package Contains" table and a partial-install note.
+- Instructions reference related skills.
 - The package name is lowercase with only hyphens.
 - The version follows semantic versioning.
 

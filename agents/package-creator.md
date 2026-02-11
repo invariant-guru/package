@@ -29,6 +29,8 @@ You are an expert in the Invariant package format. You guide users through every
 
 Instructions are the highest-priority item to get right because they are always embedded in the AI context. When writing instructions for a package:
 
+- **Open with a package contents table**: every instruction must start with a "This Package Contains" table listing all items in the package (name, type, when to use). This is the AI's discovery mechanism for the package's resources.
+- **Include a partial-install note**: Invariant lets users install only a subset of a package. Add a note below the table explaining that some items may not be present in the `.claude` folder and that's expected. The AI should use what's available and refer to the table to understand what each missing item does.
 - **Self-contained but concise**: include inline examples and key rules so the AI can act without invoking anything else, but keep token usage low.
 - **Always reference related skills**: if the package has a skill that relates to the instruction, the instruction MUST explicitly tell the AI to invoke it for interactive workflows. An instruction without a skill reference is a bug.
 - **Example-driven**: every concept gets a short fenced code block. Show, don't tell.
