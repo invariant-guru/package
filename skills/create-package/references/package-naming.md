@@ -12,8 +12,9 @@ project. Read this when authoring content that links to your own items, or when 
 Two packages may both ship a `frontend` skill. Without prefixing both write
 `.agents/skills/frontend`: the second install silently overwrites the first, and
 removing either one deletes the survivor's files. Prefixing makes the path a function
-of the owning package, so collisions cannot happen and every file on disk is
-attributable.
+of the owning package, so the ordinary collision disappears and every file on disk is
+attributable to exactly one package. The residual cases are listed under
+[Collisions](#collisions) — they are detected and refused, never overwritten.
 
 The name is a **pure function of the package name and the item name** — no filesystem
 state, no install order, no collision counters, no content rewriting. You can compute
@@ -110,6 +111,20 @@ spell the installed path itself:
 See [implement-command](.claude/skills/nest-clean-architecture-implement-command/SKILL.md).
 ```
 
+**One exception: files inside a single skill folder.** A skill is bundled and installed
+as a unit, so a link from `SKILL.md` to its own `references/` or `scripts/` stays
+relative and survives the rename untouched:
+
+```md
+<!-- inside skills/frontend/SKILL.md, package @acme/docs -->
+See [conventions.md](references/conventions.md).                            ← correct
+See [conventions.md](.claude/skills/frontend/references/conventions.md).    ← wrong twice:
+                     the folder is renamed, and a bundled file needs no absolute path
+```
+
+The rule is about crossing an *item* boundary, not a file boundary. Links from one item
+to another item spell the prefix; links within one item do not.
+
 Two conforming strategies — pick one per package and stay consistent:
 
 | Strategy | What you do | Best when |
@@ -118,6 +133,26 @@ Two conforming strategies — pick one per package and stay consistent:
 | **Pre-prefix the folders** | Name the folder `skills/nest-clean-architecture-implement-command/` | The slug is short and meaningful — repository layout and installed layout become byte-identical, and a skill's `name:` frontmatter matches its installed folder with no install-time mutation |
 
 Pre-prefixing is safe by idempotence: an already-prefixed name is left alone.
+
+### Skills: the frontmatter `name` must match the installed folder
+
+Claude Code derives a skill's invocation name from the directory it is installed in, not
+from the `name:` in its frontmatter. Under Invariant that directory carries the prefix,
+so a skill authored as `skills/frontend/` in `@acme/docs` is invoked as
+`/acme-docs-frontend`. Write the qualified name into the frontmatter so the two agree:
+
+```yaml
+# skills/frontend/SKILL.md  in package @acme/docs
+---
+name: acme-docs-frontend
+description: …
+---
+```
+
+Under the pre-prefix strategy the folder already carries the name and the two match by
+construction. Either way, check the result against the 64-character limit Anthropic
+publishes for `name` — a long scope plus a long item name adds up faster than expected.
+See the skill's [skill-authoring.md](skill-authoring.md) for the full frontmatter rules.
 
 ## Tooling
 
@@ -140,14 +175,21 @@ quiet. Warnings are advisory — they never make a package invalid.
 
 ## Collisions
 
-Cross-package collisions are impossible: different slug, different folder. Two cases
-remain, and both are refused rather than overwritten:
+Prefixing removes the common collision — two packages shipping `frontend` land in
+different folders because their slugs differ. It does not make collisions impossible.
+Two cases survive, and both are **detected and refused**, never silently overwritten:
 
-- One package shipping `frontend` **and** `<slug>-frontend` — they resolve to the same
-  name. `invariant add` fails naming both; `validate` warns before publish.
-- A path already owned by a different package's active item (reachable only through
-  slug arithmetic — package `docs` with item `web-frontend` versus package `docs-web`
-  with item `frontend`). `invariant add` refuses and names the current owner.
+- **Within one package** — shipping `frontend` **and** `<slug>-frontend`. Idempotence
+  maps both to the same qualified name. `invariant add` fails naming both; `validate`
+  warns before publish.
+- **Across two packages, through slug arithmetic** — package `docs` with item
+  `web-frontend` qualifies to `docs-web-frontend`, and so does package `docs-web` with
+  item `frontend`. Different packages, one path. `invariant add` refuses and names the
+  package that currently owns it.
+
+The second case is rare but real, and it is the reason the guarantee is "attributable
+and refused", not "impossible". A package name that is another package's name plus a
+hyphenated segment is the shape to avoid.
 
 ## Upgrading a project installed before prefixing
 

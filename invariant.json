@@ -1,6 +1,6 @@
 {
   "name": "@invariant-guru/cli",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Helps create, structure, and publish Invariant packages with instructions, a skill, and a dedicated agent.",
   "author": "invariant.guru",
   "license": "MIT",
